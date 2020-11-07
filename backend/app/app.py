@@ -5,14 +5,16 @@ from match_history import get_match_history
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
 
+
 app = Flask(__name__)
+
 
 @app.route('/health_check')
 def health_check():
     return 'ok'
 
+
 @app.route('/compare', methods=['GET'])
-# player_a, player_b
 def compare_players():
 
   player_a_name = request.args['player_a']
@@ -25,6 +27,7 @@ def compare_players():
 
   ret['win_rate'] = calculate(player_a_match_history, player_b_match_history)
   return jsonify(ret)
+
 
 @app.route('/test')
 def test():
