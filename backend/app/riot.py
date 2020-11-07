@@ -2,6 +2,7 @@ import json
 import requests
 
 from config import RIOT_HOST, RIOT_API_KEY
+from data import champion_id_to_name
 
 # To regenerate: https://developer.riotgames.com/
 # Expires: Sat, Nov 7th, 2020 @ 7:35pm (PT) in 21 hours and 26 minutes
@@ -44,20 +45,59 @@ def get_match_details(match_id):
 	return riot_request(endpoint)
 
 
+def player_champion(match, name):
+	# get participant id
+	participant_id = 0
+	for player in match['participantIdentities']:
+		if player['player']['summonerName'] == name:
+			participant_id = player['participantId']
+
+	# get participants champion id
+	champion_id = 0
+	for player in match['participants']:
+		if player['participantId'] == participant_id:
+			champion_id = player['championId']
+
+	# convert id to name
+	return champion_id_to_name(champion_id)
+
+
 def get_match_history(player_name):
 	account_id = get_account_id(player_name)
 	match_history = get_account_matches(account_id)
+	
+	print("found {} matches".format(len(match_history)))
 
 	expanded_match_history = []
 	for match in match_history[:15]:
 		match_id = match["gameId"]
+
 		match_details = get_match_details(match_id)
 
-		for match_player in match_details["participantIdentities"]:
-			if match_player["player"]["accountId"] == account_id:
-				match_player["player"]["is_current_player"] = True
-				# only one of the players should match per game, so break after found.
-				break
 		expanded_match_history.append(match_details)
 
+		print(player_champion(match_details, player_name))
+
 	return expanded_match_history
+
+
+def filter_matches_by_name(dirty_match_history, player_name):
+	print("searching through {} matches".format(len(dirty_match_history)))
+	cleaned_match_history = []
+	for match in dirty_match_history:
+		players = match['participantIdentities']
+		match_players = [ player['player']['summonerName'] for player in players ] 
+		if player_name in match_players:
+			cleaned_match_history.append(match)
+
+	return cleaned_match_history
+
+
+def get_matches_between(player_a, player_b):
+	player_a_match_history = get_match_history(player_a)
+
+	filtered_matches = filter_matches_by_name(player_a_match_history, player_b)
+
+	print("{} is in {} game(s) with {}".format(player_a, len(filtered_matches), player_b))
+
+	return filtered_matches

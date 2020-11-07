@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 import json
 import requests
 
-from riot import get_match_history
+from riot import get_matches_between
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
 from liquidpedia import get_players
@@ -37,13 +37,19 @@ def compare_players():
     player_a_name = request.args['player_a']
     player_b_name = request.args['player_b']
 
-    ret = {}
+    # get summoner names for player a
 
-    player_a_match_history = get_match_history(player_a_name)
-    player_b_match_history = get_match_history(player_b_name)
+    # get summoner names for player b
 
-    ret['win_rate'] = calculate(player_a_match_history, player_b_match_history)
-    return jsonify(ret)
+    # get matches between all permutations (without duplicates)
+
+    # calculate win loss
+
+    matches = get_matches_between(player_a_name, player_b_name)
+    print(len(matches))
+
+    # ret['win_rate'] = calculate(player_a_match_history, player_b_match_history)
+    return jsonify(matches)
 
 
 @app.route('/players', methods=['GET'])
