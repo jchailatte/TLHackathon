@@ -27,6 +27,12 @@ const useStyles = makeStyles((theme) => ({
         minHeight: '100vh',
         paddingTop: '15vh',
     },
+    center: {
+        position: 'absolute',
+        top: '60%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+    },
     alert: {
         position: 'absolute',
         top: '5%',
@@ -57,24 +63,18 @@ const useStyles = makeStyles((theme) => ({
         
     },
     fightButton: {
-        position: 'absolute',
-        top: '60%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
         height: '25vh',
         width: '25vh',
         background: '#ce2029',
         color: 'white',
-        zIndex: '10'
+        zIndex: '10',
+        boxShadow: '0 0 0 0 rgba(199, 21, 133, 0.5)',
+        animation: '$pulse 2s infinite'
     },
     hide: {
         display: 'none'
     },
     circularChart: {
-        position: 'absolute',
-        top: '60%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
         maxWidth: '25vh',
         zIndex: '5',
     },
@@ -142,6 +142,12 @@ const useStyles = makeStyles((theme) => ({
     wavepadding: {
         paddingTop: '15vh',
     },
+    rotatingBlue: {
+        animation: '$rotate 6s linear'
+    },
+    turn: {
+        transform: 'scaleX(-1)'
+    },
     "@keyframes progress": {
         "0%": {
             strokeDasharray: '25 100'
@@ -166,6 +172,33 @@ const useStyles = makeStyles((theme) => ({
         "100%":{
             transform: 'translateX(-50%) translateZ(0) scaleY(1)'
         },
+    },
+    "@keyframes pulse":{
+        "0%" :{
+        },
+        "50%" : {
+            boxShadow: '0 0 0 20px rgba(199, 21, 133, 0)'
+        },
+        "100%" : {
+            boxShadow: '0 0 0 0 rgba(199, 21, 133, 0)'
+        }
+    },
+    "@keyframes rotate":{
+        "0%" : {
+            transform: 'rotateY(360deg)'
+        },
+        "25%" : {
+            transform : 'rotateY(180deg)'
+        },
+        "50%" : {
+            transform : 'rotatey(360deg)'
+        },
+        "75%" : {
+            transform : 'rotateY(180deg)'
+        },
+        "100%" : {
+            transform : 'rotateY(360deg)'
+        }
     },
     "@font-face": {
         fontFamily: 'SFF',
@@ -207,6 +240,7 @@ export default function Index(props){
     const [player1, setPlayer1] = useState("");
     const [player2, setPlayer2] = useState("");
     const [open, setOpen] = useState(false);
+    const [turn, setTurn] = useState(false);
     const [message, setMessage] = useState("");
     const [run, setRun] = useState(false);
     const [image1, setImage1] = useState("/graphics/default.png");
@@ -224,10 +258,14 @@ export default function Index(props){
             setOpen(true);
             setMessage("Players cannot be the same!");
         } else {
+            const testpercent = 10;
             setFade(800);
             setDisappear(true);
             setRun(true);
-            setPercent(10);
+            setPercent(testpercent);
+            if(testpercent > 50){
+                setTurn(true);
+            }
         }
     }
 
@@ -256,15 +294,15 @@ export default function Index(props){
             </Fade>
             <Fade in={!disappear} timeout={fade}>
                 <Fab 
-                    className={classes.fightButton} 
+                    className={`${classes.fightButton} ${classes.center}`} 
                     onClick={fightOnClick}
                 >
-                    <Typography variant="h3">
+                    <Typography variant="h3" style={{fontFamily: "'Big Shoulders Stencil Text', cursive"}}>
                         FIGHT!
                     </Typography>
                 </Fab>
             </Fade>
-            <svg viewBox="0 0 36 36" className={classes.circularChart}>
+            <svg viewBox="0 0 36 36" className={`${classes.center} ${classes.circularChart}`}>
                 <path className={classes.circlebg}
                     d="M18 2.0845
                     a 15.9155 15.9155 0 0 1 0 31.831
@@ -286,6 +324,10 @@ export default function Index(props){
                     strokeDasharray={`${percent}, 100`}
                 />
             </svg>
+            <div className={classes.center}>
+                <img src="https://static-cdn.jtvnw.net/emoticons/v1/301702758/2.0" 
+                    className={clsx({[classes.rotatingBlue]:run, [classes.turn]: turn})}/>
+            </div>
             <Grid container align="center">
                 <Grid item xs={12} className={classes.title}>
                     {[...Array(5)].map((x, i) =>        
@@ -339,7 +381,7 @@ export default function Index(props){
                         className={classes.playerImg}
                     />
                     <Paper className={classes.paperPadding}>
-                        <Typography variant='h3'> 
+                        <Typography variant='h3' > 
                             {player1 ? player1 : "Player 1"}
                         </Typography>
                     </Paper>
@@ -369,7 +411,7 @@ export default function Index(props){
                         className={classes.playerImg}
                     />
                     <Paper className={classes.paperPadding} style={{backgroundColor: '#0C223F'}}>
-                        <Typography variant='h3' style={{color: 'white'}} >
+                        <Typography variant='h3' style={{color: 'white'}}>
                             {player2 ? player2 : "Player 2"}
                         </Typography>
                     </Paper>
