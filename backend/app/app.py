@@ -4,7 +4,7 @@ import requests
 from riot_games_api import get_match_history
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
-from liquidpedia import get_players_from_liquidpedia
+from liquidpedia import get_players
 
 
 app = Flask(__name__)
@@ -67,10 +67,10 @@ def get_player_names():
             ]
 		}
     '''
-    return jsonify(get_players_from_liquidpedia())
+    return jsonify(get_players())
 
 
-@app.route('/player', method=['GET'])
+@app.route('/player', methods=['GET'])
 def get_player_data():
     '''
     Fetches data for specified player
@@ -83,7 +83,7 @@ def get_player_data():
             some shit here
 		}
     '''
-    return
+    return 'placeholder'
 
 
 @app.route('/test')

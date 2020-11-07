@@ -12,10 +12,9 @@ def get_players_from_liquidpedia():
     }
 
     data = {
-        'wiki': 'leagueoflegends',
+        'wiki'   : 'leagueoflegends',
         'apikey' : LIQUIDPEDIA_API_KEY,
-        'limit' : 1000,
-        # 'conditions' : '[[pagename::Doublelift]]'
+        'limit'  : 1848,
     }
 
     r = requests.post(url, headers=headers, data=data)
@@ -27,12 +26,17 @@ def get_players_from_liquidpedia():
 
 
 def get_players():
-    players = []
-    response = get_players_from_liquidpedia()
-    for player in response:
-        players.append(player['id'])
+    players = {}
 
-    print()
-    return
+    response = get_players_from_liquidpedia()
+
+    for player in response:
+        region = player['region']
+        id = player['id']
+        if region not in players:
+            players[region] = []
+        players[region].append(id)
+
+    return players
 
 get_players()
