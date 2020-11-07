@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify
 import json
 import requests
-from riot_games_api import get_match_history
+
+from riot import get_match_history
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
 from liquidpedia import get_players
@@ -12,7 +13,7 @@ app = Flask(__name__)
 
 @app.route('/health_check')
 def health_check():
-    return 'ok'
+    return 'OK'
 
 
 @app.route('/compare', methods=['GET'])

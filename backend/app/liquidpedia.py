@@ -1,10 +1,15 @@
-from config import LIQUIDPEDIA_API_KEY
-
 import json
 import requests
 
-def get_players_from_liquidpedia():
-    url = 'https://api.liquipedia.net/api/v1/player'
+from config import LIQUIDPEDIA_HOST, LIQUIDPEDIA_API_KEY
+
+
+liquidpedia_session = requests.Session()
+
+
+def liquidpedia_request(endpoint):
+
+    url = '{}/{}'.format(LIQUIDPEDIA_HOST, endpoint)
 
     headers = {
         'Content-Type' : 'application/x-www-form-urlencoded',
@@ -14,10 +19,10 @@ def get_players_from_liquidpedia():
     data = {
         'wiki'   : 'leagueoflegends',
         'apikey' : LIQUIDPEDIA_API_KEY,
-        'limit'  : 1848,
+        'limit'  : 5000,
     }
 
-    r = requests.post(url, headers=headers, data=data)
+    r = liquidpedia_session.post(url, headers=headers, data=data)
 
     if r.status_code != 200:
         raise Exception("Failed to make request to Liquidpedia\nStatus Code: {}".format(r.status_code))
@@ -28,7 +33,7 @@ def get_players_from_liquidpedia():
 def get_players():
     players = {}
 
-    response = get_players_from_liquidpedia()
+    response = liquidpedia_request("api/v1/player")
 
     for player in response:
         region = player['region']
@@ -38,5 +43,3 @@ def get_players():
         players[region].append(id)
 
     return players
-
-get_players()
