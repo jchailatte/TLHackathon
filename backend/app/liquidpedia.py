@@ -3,7 +3,7 @@ import requests
 
 from config import LIQUIDPEDIA_HOST, LIQUIDPEDIA_API_KEY
 
-
+# ------------------------------ Request Handler ------------------------------
 liquidpedia_session = requests.Session()
 
 
@@ -29,17 +29,21 @@ def liquidpedia_request(endpoint):
 
     return r.json()['result']
 
-
+# ------------------------------ Data Collection ------------------------------
 def get_players():
-    players = {}
+    endpoint = "api/v1/player"
+    return liquidpedia_request(endpoint)
 
-    response = liquidpedia_request("api/v1/player")
+# ------------------------------ Data Manipulation ------------------------------
+def get_region_to_players():
+    players = get_players()
 
-    for player in response:
+    ret = {}
+    for player in players:
         region = player['region']
         id = player['id']
         if region not in players:
             players[region] = []
-        players[region].append(id)
+        ret[region].append(id)
 
     return players

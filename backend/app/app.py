@@ -2,7 +2,8 @@ from flask import Flask, request, jsonify
 import json
 import requests
 
-from riot import get_matches_between
+from data import bust_match_data
+from riot import get_matches_against
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
 from liquidpedia import get_players
@@ -41,12 +42,13 @@ def compare_players():
 
     # get summoner names for player b
 
-    # get matches between all permutations (without duplicates)
+    # create permuations (without duplicates)
+
+    # get matches for all permutes
+    matches = get_matches_against(player_a_name, player_b_name)
+    print(len(matches))
 
     # calculate win loss
-
-    matches = get_matches_between(player_a_name, player_b_name)
-    print(len(matches))
 
     # ret['win_rate'] = calculate(player_a_match_history, player_b_match_history)
     return jsonify(matches)
@@ -74,7 +76,7 @@ def get_player_names():
             ]
 		}
     '''
-    return jsonify(get_players())
+    return jsonify(get_region_to_players())
 
 
 @app.route('/player', methods=['GET'])
@@ -93,6 +95,10 @@ def get_player_data():
     return 'placeholder'
 
 
-@app.route('/test')
-def test():
-    return jsonify(get_match_history("golang"))
+@app.route('/bust_match_data', methods=['GET'])
+def do_bust_match_data():
+    '''
+    Clears the recorded matches in match_data
+    '''
+    bust_match_data()
+    return 'Busted'
