@@ -1,14 +1,18 @@
 import React, {useState, useEffect} from 'react';
+import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
 import Fab from '@material-ui/core/Fab';
 import AutoComplete from '@material-ui/lab/AutoComplete'; 
+import Fade from '@material-ui/core/Fade';
+import { Alert, AlertTitle } from '@material-ui/lab';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
+
 
 import { useGet } from '../utils/hooks/useGet';
 
@@ -20,6 +24,14 @@ const useStyles = makeStyles((theme) => ({
     side2: {
         backgroundColor: '#FFFFFF',
         minHeight: '100vh'
+    },
+    alert: {
+        position: 'absolute',
+        top: '5%',
+        width: '90%',
+        zIndex: '20',
+        transform: 'translate(5%)',
+        borderStyle: "outset"
     },
     playerImg:{
         height: '60vh',
@@ -43,14 +55,55 @@ const useStyles = makeStyles((theme) => ({
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
-        height: '20vh',
-        width: '20vh',
-        background: 'radial-gradient(red, #0C223F)',
-        color: 'white'
+        height: '25vh',
+        width: '25vh',
+        background: '#ce2029',
+        color: 'white',
+        zIndex: '10'
     },
-    disappear: {
+    hide: {
         display: 'none'
-    }
+    },
+    circularChart: {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        maxWidth: '25vh',
+        zIndex: '5',
+    },
+    circle: {
+        stroke: 'white',
+        fill: 'none',
+        strokeWidth: '2.8',
+        animation: '$progress 5s ease-out forwards',
+    
+    },
+    oppositeCircle: {
+        stroke: '#0C223F',
+        fill: 'none',
+        strokeWidth: '2.8',
+    },
+    circlebg: {
+        fill: 'none',
+        stroke: '#eee',
+        strokeWidth: '3.8'
+    },
+    "@keyframes progress": {
+        "0%": {
+            strokeDasharray: '25 100'
+        },
+        "25%":{
+            strokeDasharray: '75 100'
+        },
+        "50%": {
+            strokeDasharray: '25 100'
+        },
+        "75%": {
+            strokeDasharray: '75 100'
+        },
+    },
+    //potentially add keyframes for rotating blues at the top
     
 }));
 
@@ -67,7 +120,7 @@ const players = [
         value: "CoreJJ",
         label: "CoreJJ"
     },
-    {
+    { 
         value: "Test",
         label: "Test"
     }
@@ -84,12 +137,30 @@ export default function Index(props){
 
     const [player1, setPlayer1] = useState("");
     const [player2, setPlayer2] = useState("");
+    const [open, setOpen] = useState(false);
+    const [message, setMessage] = useState("");
+    const [run, setRun] = useState(false);
     const [image1, setImage1] = useState("/graphics/default.png");
     const [image2, setImage2] = useState("/graphics/default.png");
+    const [disappear, setDisappear] = useState(false);
+    const [fade, setFade] = useState(0);
+    const [percent, setPercent] = useState(50);
 
-    const handleChange2 = (event) => {
-        setPlayer2(event.target.value);
-    };
+    const fightOnClick = () => {
+        if(player1 === "" || player2 === "") {
+            setOpen(true);
+            setMessage("Must select a Player!");
+        } 
+        else if (player1 === player2) {
+            setOpen(true);
+            setMessage("Players cannot be the same!");
+        } else {
+            setFade(800);
+            setDisappear(true);
+            setRun(true);
+            setPercent(10);
+        }
+    }
 
     // const winRate = useGet("localhost:8080/compare",
     //     {
@@ -100,11 +171,52 @@ export default function Index(props){
 
     return(
         <React.Fragment>
-            <Fab className={classes.fightButton} size="large">
-                <Typography variant="h4">
-                    Fight!
-                </Typography>
-            </Fab>
+            <Fade in={open}>
+                <Alert
+                    severity="warning"
+                    action={
+                        <IconButton size="small" onClick={()=>{setOpen(false)}}>
+                            <CloseIcon/>
+                        </IconButton>
+                    }
+                    className={classes.alert}
+                >
+                    <AlertTitle>Warning</AlertTitle>
+                    {message}
+                </Alert>
+            </Fade>
+            <Fade in={!disappear} timeout={fade}>
+                <Fab 
+                    className={classes.fightButton} 
+                    onClick={fightOnClick}
+                >
+                    <Typography variant="h4">
+                        Fight!
+                    </Typography>
+                </Fab>
+            </Fade>
+            <svg viewBox="0 0 36 36" className={classes.circularChart}>
+                <path className={classes.circlebg}
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path className={classes.oppositeCircle}
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                />
+                <path
+                    className={clsx({[classes.circle]:run})}
+                    d="M18 2.0845
+                    a 15.9155 15.9155 0 0 1 0 31.831
+                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                    fill="none"
+                    stroke="#444"
+                    strokeWidth="1"
+                    strokeDasharray={`${percent}, 100`}
+                />
+            </svg>
             <Grid container align="center">
                 <Grid item xs={12} className={classes.title}>
                     {[...Array(5)].map((x, i) =>        
@@ -132,6 +244,7 @@ export default function Index(props){
                         getOptionLabel={option => typeof option === 'string' ? option : option.label}
                         value={player1}
                         onChange={(event, newValue) => {setPlayer1(newValue.value)}}
+                        disableClearable
                         renderInput={(params) => 
                             <TextField 
                                 {...params} 
@@ -159,6 +272,7 @@ export default function Index(props){
                         getOptionLabel={option => typeof option === 'string' ? option : option.label}
                         value={player2}
                         onChange={(event, newValue) => {setPlayer2(newValue.value)}}
+                        disableClearable
                         renderInput={(params) => 
                             <TextField 
                                 {...params} 
@@ -179,7 +293,6 @@ export default function Index(props){
                     </Paper>
                 </Grid>
             </Grid>
-
         </React.Fragment>
     );
 };
