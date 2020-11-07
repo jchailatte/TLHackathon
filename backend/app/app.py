@@ -18,10 +18,13 @@ def compare_players():
   player_a_name = request.args['player_a']
   player_b_name = request.args['player_b']
 
+  ret = {}
+
   player_a_match_history = get_match_history(player_a_name)
   player_b_match_history = get_match_history(player_b_name)
-  win_rate = calculate(player_a_match_history, player_b_match_history)
-  return jsonify(win_rate)
+
+  ret['win_rate'] = calculate(player_a_match_history, player_b_match_history)
+  return jsonify(ret)
 
 @app.route('/test')
 def test():
