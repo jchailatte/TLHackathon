@@ -7,6 +7,7 @@ from cachetools import cached, TTLCache
 
 from config import RIOT_HOST, RIOT_API_KEY, NUM_MATCHES
 from data import champion_id_to_name, get_match_from_file, put_match_to_file
+from util import hash
 
 
 # ------------------------------ Request Handler ------------------------------
@@ -17,10 +18,10 @@ riot_session = requests.Session()
 def make_call(url, headers):
 	return riot_session.get(url, headers=headers)
 
-@cached(cache=TTLCache(maxsize=1024, ttl=600))
-def riot_request(endpoint):
+@cached(cache=TTLCache(maxsize=1024, ttl=600), key=hash)
+def riot_request(endpoint, params={}):
 
-	url = '{}/{}'.format(RIOT_HOST, endpoint)
+	url = '{}/{}?{}'.format(RIOT_HOST, endpoint, urllib.parse.urlencode(params))
 	print(url)
 
 	headers = {
@@ -52,9 +53,7 @@ def get_account_matches(player_id, num_matches=100):
 
 	matches = []
 	for i in range(math.ceil(num_matches/100)):
-		params = urllib.parse.urlencode( { "beginIndex" : i * 100 } )
-		endpoint = 'lol/match/v4/matchlists/by-account/{}?{}'.format(player_id, params)
-		match_data = riot_request(endpoint)
+		match_data = riot_request(endpoint, { "beginIndex" : i * 100 } )
 
 		for match in match_data['matches']:
 			matches.append(match['gameId'])
@@ -103,12 +102,12 @@ def filter_same_team(player_a_name, player_b_name, matches):
 
 		player_a_team = 0
 		player_b_team = 0
-		for identiy in match_details['participantIdentities']:
-			summoner_name = identiy['player']['summonerName']
-			if identiy['player']['summonerName'] == player_a_name:
-				player_a_team = int(participant_team_mapping[identiy['participantId']])
-			elif identiy['player']['summonerName'] == player_b_name:
-				player_b_team = int(participant_team_mapping[identiy['participantId']])
+		for identity in match_details['participantIdentities']:
+			summoner_name = identity['player']['summonerName']
+			if summoner_name == player_a_name:
+				player_a_team = int(participant_team_mapping[identity['participantId']])
+			elif summoner_name == player_b_name:
+				player_b_team = int(participant_team_mapping[identity['participantId']])
 
 		if player_a_team > 0 and player_b_team > 0 and player_a_team != player_b_team : 
 			filtered_matches.append(match_id)

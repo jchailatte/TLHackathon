@@ -48,11 +48,12 @@ def compare_players():
     # create permuations (without duplicates)
     permutations = list(product(player_a_names, player_b_names))
 
-    # get matches for all permutes
+    # get soloqueue matches for all permutes
     matches = []
     for first, second in permutations:
         matches.extend(get_matches_against(first, second))
     print(len(matches))
+    # get pro matches
 
     # calculate win loss
 
