@@ -1,5 +1,9 @@
 from flask import Flask
 import json
+import requests
+from match_history import get_match_history
+from summoner_names import get_summoner_names_from_player_name
+from calculate import calculate
 
 app = Flask(__name__)
 
@@ -16,12 +20,3 @@ def compare_players():
   return json.dumps({
     win_rate: win_rate
   })
-
-def get_match_history(player_name):
-  pass
-
-def get_summoner_names_from_player_name(player_name):
-  pass
-
-def calculate():
-  pass
