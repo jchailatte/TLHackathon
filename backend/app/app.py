@@ -1,9 +1,9 @@
 from flask import Flask
 import json
 import requests
-from app.match_history import get_match_history
-from app.summoner_names import get_summoner_names_from_player_name
-from app.calculate import calculate
+from match_history import get_match_history
+from summoner_names import get_summoner_names_from_player_name
+from calculate import calculate
 
 app = Flask(__name__)
 

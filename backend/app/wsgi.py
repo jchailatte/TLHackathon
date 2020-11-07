@@ -1,7 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 from gevent.pywsgi import WSGIServer
-from app.app import app
+from app import app
 
 if __name__ == '__main__':
     print('Serving on 8088...')
