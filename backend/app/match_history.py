@@ -16,6 +16,7 @@ def get_match_history(player_name):
   for match in match_history[:15]:
     match_id = match["gameId"]
     match_details = lol_api_request("lol/match/v4/matches/" + str(match_id))
+    match_details["is_player"] = True
     expanded_match_history.append(match_details)
 
   return json.dumps(expanded_match_history)
