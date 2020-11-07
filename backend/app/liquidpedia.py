@@ -1,12 +1,15 @@
 import json
 import requests
+from cachetools import cached, TTLCache
 
 from config import LIQUIDPEDIA_HOST, LIQUIDPEDIA_API_KEY
+
 
 # ------------------------------ Request Handler ------------------------------
 liquidpedia_session = requests.Session()
 
 
+@cached(cache=TTLCache(maxsize=1024, ttl=600))
 def liquidpedia_request(endpoint):
 
     url = '{}/{}'.format(LIQUIDPEDIA_HOST, endpoint)
@@ -36,14 +39,14 @@ def get_players():
 
 # ------------------------------ Data Manipulation ------------------------------
 def get_region_to_players():
-    players = get_players()
+    players_data = get_players()
 
-    ret = {}
-    for player in players:
+    players = {}
+    for player in players_data:
         region = player['region']
         id = player['id']
         if region not in players:
             players[region] = []
-        ret[region].append(id)
+        players[region].append(id)
 
     return players

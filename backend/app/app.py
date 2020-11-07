@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from itertools import product
 import json
 import requests
 
@@ -6,7 +7,7 @@ from data import bust_match_data
 from riot import get_matches_against
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
-from liquidpedia import get_players
+from liquidpedia import get_region_to_players
 
 
 app = Flask(__name__)
@@ -39,13 +40,18 @@ def compare_players():
     player_b_name = request.args['player_b']
 
     # get summoner names for player a
+    player_a_names = [ 'Doublelift', 'Peng Yiliang' ]
 
     # get summoner names for player b
+    player_b_names = [ 'KEITH EXOTIC', 'KEITHMCBRIEF' ]
 
     # create permuations (without duplicates)
+    permutations = list(product(player_a_names, player_b_names))
 
     # get matches for all permutes
-    matches = get_matches_against(player_a_name, player_b_name)
+    matches = []
+    for first, second in permutations:
+        matches.extend(get_matches_against(first, second))
     print(len(matches))
 
     # calculate win loss

@@ -3,20 +3,25 @@ import math
 import requests
 import urllib
 from ratelimit import limits
+from cachetools import cached, TTLCache
 
 from config import RIOT_HOST, RIOT_API_KEY, NUM_MATCHES
 from data import champion_id_to_name, get_match_from_file, put_match_to_file
 
+
 # ------------------------------ Request Handler ------------------------------
 riot_session = requests.Session()
+
 
 @limits(calls=20, period=1)
 def make_call(url, headers):
 	return riot_session.get(url, headers=headers)
 
-def riot_request(endpoint, query_params={}):
+@cached(cache=TTLCache(maxsize=1024, ttl=600))
+def riot_request(endpoint):
 
-	url = '{}/{}?{}'.format(RIOT_HOST, endpoint, urllib.parse.urlencode(query_params))
+	url = '{}/{}'.format(RIOT_HOST, endpoint)
+	print(url)
 
 	headers = {
 		'X-Riot-Token' : RIOT_API_KEY
@@ -47,7 +52,9 @@ def get_account_matches(player_id, num_matches=100):
 
 	matches = []
 	for i in range(math.ceil(num_matches/100)):
-		match_data = riot_request(endpoint, { "beginIndex" : i * 100 })
+		params = urllib.parse.urlencode( { "beginIndex" : i * 100 } )
+		endpoint = 'lol/match/v4/matchlists/by-account/{}?{}'.format(player_id, params)
+		match_data = riot_request(endpoint)
 
 		for match in match_data['matches']:
 			matches.append(match['gameId'])

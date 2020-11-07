@@ -3,3 +3,4 @@ flask==1.1.2
 gevent==20.9.0
 beautifulsoup4==4.9.3
 ratelimit==2.2.1
+cachetools==4.1.1
