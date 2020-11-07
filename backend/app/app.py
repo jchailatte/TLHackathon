@@ -4,6 +4,7 @@ import requests
 from match_history import get_match_history
 from summoner_names import get_summoner_names_from_player_name
 from calculate import calculate
+from liquidpedia import get_players_from_liquidpedia
 
 
 app = Flask(__name__)
@@ -32,3 +33,7 @@ def compare_players():
 @app.route('/test')
 def test():
     return get_match_history("golang")
+
+@app.route('/players', methods=['GET'])
+def get_player_names():
+    return jsonify(get_players_from_liquidpedia())
