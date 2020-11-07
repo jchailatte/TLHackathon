@@ -1,5 +1,6 @@
 from config import LIQUIDPEDIA_API_KEY
 
+import json
 import requests
 
 def get_players_from_liquidpedia():
@@ -13,9 +14,25 @@ def get_players_from_liquidpedia():
     data = {
         'wiki': 'leagueoflegends',
         'apikey' : LIQUIDPEDIA_API_KEY,
-        'limit' : 1,
-        'conditions' : '[[pagename::Doublelift]]'
+        'limit' : 1000,
+        # 'conditions' : '[[pagename::Doublelift]]'
     }
 
     r = requests.post(url, headers=headers, data=data)
-    return r.json()
+
+    if r.status_code != 200:
+        raise Exception("Failed to make request to Liquidpedia\nStatus Code: {}".format(r.status_code))
+
+    return r.json()['result']
+
+
+def get_players():
+    players = []
+    response = get_players_from_liquidpedia()
+    for player in response:
+        players.append(player['id'])
+
+    print()
+    return
+
+get_players()
