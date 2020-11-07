@@ -13,7 +13,7 @@ const theme = responsiveFontSizes(createMuiTheme({
             main: red.A400,
         },
         background:{
-            default:'#fff',
+            default:'#0C223F',
         }
     },
 
