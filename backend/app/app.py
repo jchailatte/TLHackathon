@@ -22,3 +22,7 @@ def compare_players():
   player_b_match_history = get_match_history(player_b_name)
   win_rate = calculate(player_a_match_history, player_b_match_history)
   return jsonify(win_rate)
+
+@app.route('/test')
+def test():
+    return lol_api_request("lol/summoner/v4/summoners/by-name/golang")
