@@ -23,4 +23,4 @@ def compare_players():
 
 @app.route('/test')
 def test():
-    return lol_api_request("lol/summoner/v4/summoners/by-name/golang")
+    return get_match_history("golang")
