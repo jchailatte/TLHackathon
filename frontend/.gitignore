@@ -1,0 +1,7 @@
+# Dependency directories
+node_modules/
+
+
+# Next js specific files
+
+.next/
