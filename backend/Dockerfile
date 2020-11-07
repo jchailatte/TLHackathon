@@ -7,4 +7,6 @@ RUN pip install -r requirements.txt
 
 COPY app/ .
 
-CMD [ "python", "wsgi.py" ]
+EXPOSE 8088
+
+ENTRYPOINT [ "python", "-u", "wsgi.py" ]

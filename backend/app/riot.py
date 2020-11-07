@@ -40,7 +40,8 @@ def get_account_matches(player_id):
 
 
 def get_match_details(match_id):
-	endpoint = 'lol/match/v4/matches'
+	endpoint = 'lol/match/v4/matches/{}'.format(match_id)
+	return riot_request(endpoint)
 
 
 def get_match_history(player_name):
@@ -50,7 +51,8 @@ def get_match_history(player_name):
 	expanded_match_history = []
 	for match in match_history[:15]:
 		match_id = match["gameId"]
-		match_details = riot_request("lol/match/v4/matches/" + str(match_id))
+		match_details = get_match_details(match_id)
+
 		for match_player in match_details["participantIdentities"]:
 			if match_player["player"]["accountId"] == account_id:
 				match_player["player"]["is_current_player"] = True
@@ -58,4 +60,4 @@ def get_match_history(player_name):
 				break
 		expanded_match_history.append(match_details)
 
-	return json.dumps(expanded_match_history)
+	return expanded_match_history

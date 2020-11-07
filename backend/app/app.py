@@ -52,7 +52,7 @@ def get_player_names():
     Fetches all league of legends players
 
 	Returns:
-		players ({str:[player]}): map of region -> list of players 
+		players ({str:[str]}): map of region strings -> list of player name strings
 
 	Example:
 		{
@@ -89,4 +89,4 @@ def get_player_data():
 
 @app.route('/test')
 def test():
-    return get_match_history("golang")
+    return jsonify(get_match_history("golang"))
