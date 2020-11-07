@@ -19,22 +19,24 @@ import { useGet } from '../utils/hooks/useGet';
 const useStyles = makeStyles((theme) => ({
     side1: {
         backgroundColor: '#0C223F',
-        minHeight: '100vh'
+        minHeight: '100vh',
+        paddingTop: '15vh',
     },
     side2: {
         backgroundColor: '#FFFFFF',
-        minHeight: '100vh'
+        minHeight: '100vh',
+        paddingTop: '15vh',
     },
     alert: {
         position: 'absolute',
         top: '5%',
         width: '90%',
-        zIndex: '20',
+        zIndex: '99',
         transform: 'translate(5%)',
         borderStyle: "outset"
     },
     playerImg:{
-        height: '60vh',
+        height: '50vh',
         overflowX: 'auto'
     },
     paperPadding: {
@@ -44,15 +46,19 @@ const useStyles = makeStyles((theme) => ({
     },
     selectPadding: {
         width: '95%',
-        backgroundColor: 'white'
+        backgroundColor: 'white',
+        zIndex: '50'
     },
     title: {
         display: 'flex',
-        justifyContent: 'space-evenly'
+        justifyContent: 'space-evenly',
+        background: 'white',
+        minHeight: '10vh'
+        
     },
     fightButton: {
         position: 'absolute',
-        top: '50%',
+        top: '60%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         height: '25vh',
@@ -66,7 +72,7 @@ const useStyles = makeStyles((theme) => ({
     },
     circularChart: {
         position: 'absolute',
-        top: '50%',
+        top: '60%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
         maxWidth: '25vh',
@@ -76,7 +82,7 @@ const useStyles = makeStyles((theme) => ({
         stroke: 'white',
         fill: 'none',
         strokeWidth: '2.8',
-        animation: '$progress 5s ease-out forwards',
+        animation: '$progress 6s ease-out forwards',
     
     },
     oppositeCircle: {
@@ -88,6 +94,53 @@ const useStyles = makeStyles((theme) => ({
         fill: 'none',
         stroke: '#eee',
         strokeWidth: '3.8'
+    },
+    line: {
+        position: 'absolute',
+        width: '100%',
+        overflow:'hidden',
+        height: '15%',
+        background: 'white'
+    },
+    line1:{
+        zIndex: '15',
+        opacity: '0.5',
+    },
+    line2:{
+        zIndex: '10',
+        opacity: '0.7',
+    },
+    line3:{
+        zIndex: '5',
+    },
+    wave:{
+        position: 'absolute',
+        left: '0',
+        width: '200%',
+        height: '100%',
+        backgroundRepeat: 'repeat no-repeat',
+        backgroundPosition: '0 bottom',
+        transformOrigin: "center bottom"
+    },
+    wave1:{
+        backgroundSize: '50% 80px',
+        backgroundImage: `url("/graphics/1blue.png")`
+    }, 
+    wave2:{
+        backgroundSize: '50% 100px',
+        backgroundImage: `url("/graphics/2blue.png")`,
+        animation: '$wavy 12s linear infinite',
+    }, 
+    wave3:{
+        backgroundSize: '50% 80px',
+        backgroundImage: `url("/graphics/3blue.png")`,
+        animation: '$wavy 18s linear infinite'
+    }, 
+    sffont:{
+        fontFamily: 'SFF'
+    },
+    wavepadding: {
+        paddingTop: '15vh',
     },
     "@keyframes progress": {
         "0%": {
@@ -103,6 +156,22 @@ const useStyles = makeStyles((theme) => ({
             strokeDasharray: '75 100'
         },
     },
+    "@keyframes wavy":{
+        "0%":{
+            transform: 'translateX(0) translateZ(0) scaleY(1)'
+        },
+        "50%":{
+            transform: 'translateX(-25%) translateZ(0) scaleY(0.5)'
+        },
+        "100%":{
+            transform: 'translateX(-50%) translateZ(0) scaleY(1)'
+        },
+    },
+    "@font-face": {
+        fontFamily: 'SFF',
+        src: `url("/fonts/SFF.otf") format("opentype")`
+    },
+
     //potentially add keyframes for rotating blues at the top
     
 }));
@@ -123,7 +192,7 @@ const players = [
     { 
         value: "Test",
         label: "Test"
-    }
+    },
 ]
 
 export default function Index(props){
@@ -190,8 +259,8 @@ export default function Index(props){
                     className={classes.fightButton} 
                     onClick={fightOnClick}
                 >
-                    <Typography variant="h4">
-                        Fight!
+                    <Typography variant="h3">
+                        FIGHT!
                     </Typography>
                 </Fab>
             </Fade>
@@ -226,7 +295,7 @@ export default function Index(props){
                             key={i}
                         />
                     )}  
-                    <Typography variant="h2"> 
+                    <Typography variant="h2" style={{fontFamily: 'SFF'}}> 
                         League Fighters
                     </Typography>
                     {[...Array(5)].map((x, i) =>         
@@ -237,7 +306,18 @@ export default function Index(props){
                         />
                     )}            
                 </Grid>
-                <Grid item xs={6} className={classes.side1}>
+                <Grid item xs={12}>
+                    <div className={`${classes.line} ${classes.line1}`}>
+                        <div className={`${classes.wave} ${classes.wave1}`}></div>
+                    </div>
+                    <div className={`${classes.line} ${classes.line2}`}>
+                        <div className={`${classes.wave} ${classes.wave2}`}></div>
+                    </div>
+                    <div className={`${classes.line} ${classes.line3}`}>
+                        <div className={`${classes.wave} ${classes.wave3}`}></div>
+                    </div>
+                </Grid>
+                <Grid item xs={6} className={classes.side1} >
                     <AutoComplete
                         id="player1"
                         options={players}
@@ -262,10 +342,12 @@ export default function Index(props){
                         <Typography variant='h3'> 
                             {player1 ? player1 : "Player 1"}
                         </Typography>
+                    </Paper>
+                    <Paper>
                         
                     </Paper>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={6} className={classes.side2}>
                     <AutoComplete
                         id="player2"
                         options={players}
