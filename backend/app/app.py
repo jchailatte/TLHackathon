@@ -20,3 +20,7 @@ def compare_players():
   return json.dumps({
     win_rate: win_rate
   })
+
+@app.route('/test')
+def test():
+    return lol_api_request("lol/summoner/v4/summoners/by-name/golang")
