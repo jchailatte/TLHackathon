@@ -8,6 +8,7 @@ def health_check():
     return 'ok'
 
 @app.route('/compare')
+# player_a, player_b
 def compare_players():
   player_a_match_history = get_match_history(player_a_name)
   player_b_match_history = get_match_history(player_b_name)
