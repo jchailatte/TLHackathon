@@ -363,8 +363,9 @@ export default function Index(props){
     }
 
     const reset = () => {
-        setTeam1({...initialState});
-        setTeam2({...initialState});
+        // setTeam1({...initialState});
+        // setTeam2({...initialState});
+        setTrigger(false)
         setFade(0);
         setDisappear(false);
         setRun(false);
@@ -383,14 +384,14 @@ export default function Index(props){
         console.log(`http://localhost:8088/compare_teams?team_1=${team1string}&team_2=${team2string}`);
 
         //replace here
-        fetch(`https://compare.free.beeceptor.com/compare_teams?team_1=${team1string}&team_2=${team2string}`)
+        fetch(`http://localhost:8088/compare_teams?team_1=${team1string}&team_2=${team2string}`)
             .then(data => {
                 return data.json();
             })
             .then(data => {
                 console.log(data.win_chance);
                 
-                const chance = data.win_chance * 100;
+                const chance = data.win_chance;
                 setPercent(chance);
                 if(chance > 50){
                     setTurn(true);
