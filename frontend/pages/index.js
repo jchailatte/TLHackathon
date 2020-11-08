@@ -232,11 +232,6 @@ export default function Index(props){
 
     const classes= useStyles();
 
-    const defaultProps = {
-        options: players,
-        getOptionLabel: (option) => option.label,
-    };
-
     const [player1, setPlayer1] = useState("");
     const [player2, setPlayer2] = useState("");
     const [open, setOpen] = useState(false);
@@ -258,7 +253,7 @@ export default function Index(props){
             setOpen(true);
             setMessage("Players cannot be the same!");
         } else {
-            const testpercent = 10;
+            const testpercent = 90;
             setFade(800);
             setDisappear(true);
             setRun(true);
@@ -383,6 +378,9 @@ export default function Index(props){
                     <Paper className={classes.paperPadding}>
                         <Typography variant='h3' > 
                             {player1 ? player1 : "Player 1"}
+                        </Typography>
+                        <Typography variant='h4' > 
+                            inesrt team here
                         </Typography>
                     </Paper>
                     <Paper>
