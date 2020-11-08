@@ -1,37 +1,41 @@
-import atexit
-import gzip
-import json
 import os
+import json
+
+champions_data_path = os.path.join(os.path.dirname(__file__), './data/champions.json')
+champions_custom_data_path = os.path.join(os.path.dirname(__file__), './data/champions_custom.json')
+
+# ------------------------------ Champions data ------------------------------
+def load_champions():
+    return json.load(open(champions_data_path, 'r'))['data']
+
+def load_champions_custom():
+    return json.load(open(champions_custom_data_path, 'r'))
+
+champions = load_champions()
+champions_custom = load_champions_custom()
+
+def get_champion_to_tags():
+    tags = {}
+    for champion in champions:
+        champion_id = int(champions[champion]['key'])
+        tags[champion_id] = champions[champion]['tags']
+    return tags
 
 
-champion_data_path = os.path.join(os.path.dirname(__file__), './data/champion_data.json')
-champion_data = json.load(open(champion_data_path))['data']
+def get_tags():
+    tags = set()
+    for champion in champions:
+        for tag in champions[champion]['tags']:
+            tags.add(tag)
+    return list(tags)
 
-def champion_id_to_name(champion_id):
-    for name, data in champion_data.items():
-        if str(champion_id) == data['key']:
-            return name
-    return None
+def get_ids_to_custom():
+    name_to_id = {}
+    for champion in champions:
+        name_to_id[champion] = int(champions[champion]['key'])
+    
+    ids_to_custom = {}
+    for champion in champions_custom:
+        ids_to_custom[name_to_id[champion['Champion'].replace(' ','')]] = champion
 
-
-match_data_path = os.path.join(os.path.dirname(__file__), './data/match_data.json.gz')
-match_data = json.load(gzip.open(match_data_path, 'rb'))
-print(len(match_data))
-
-def get_match_from_file(match_id):
-    return match_data.get(str(match_id))
-
-
-def put_match_to_file(match_id, match_data_new):
-    match_data[match_id] = match_data_new
-
-
-def bust_match_data():
-    match_data.clear()
-
-
-def exit_handler():
-    with gzip.open(match_data_path, 'wb+') as f:
-        f.write(str.encode(json.dumps(match_data)))
-
-atexit.register(exit_handler)
+    return ids_to_custom
