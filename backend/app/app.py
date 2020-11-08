@@ -3,9 +3,11 @@ from itertools import product
 import json
 import requests
 import ml
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app)
 
 
 @app.route('/health_check')
