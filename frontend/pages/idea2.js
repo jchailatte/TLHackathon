@@ -24,11 +24,11 @@ import { useFetch } from '../utils/hooks/useFetch';
 const useStyles = makeStyles((theme) => ({
     side1: {
         backgroundColor: '#0C223F',
-        paddingBottom: '5vh'
+        paddingBottom: '2vh'
     },
     side2: {
         backgroundColor: '#FFFFFF',
-        paddingBottom: '5vh'
+        paddingBottom: '2vh'
     },
     center: {
         position: 'absolute',
@@ -86,7 +86,7 @@ const useStyles = makeStyles((theme) => ({
         display: 'none'
     },
     circularChart: {
-        maxWidth: '25vh',
+        maxWidth: '35vh',
         zIndex: '25',
     },
     circle: {
@@ -160,7 +160,7 @@ const useStyles = makeStyles((theme) => ({
         transform: 'scaleX(-1)'
     },
     champCards: {
-        height: '75vh',
+        height: '55vh',
         width: '8vw',
     },
     gradientBorder: {
@@ -188,6 +188,15 @@ const useStyles = makeStyles((theme) => ({
         width: '90vw', 
         maxHeight: '90vh', 
         overflowY: 'scroll',
+    },
+    hidingblue:{
+        position: 'absolute',
+        height: '100px',
+        top: '60vh',
+        animation: "$slide 6s linear forwards"
+
+    },
+    slideDown: {
     },
     "@keyframes progress": {
         "0%": {
@@ -225,25 +234,57 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     "@keyframes rotate":{
-        "0%" : {
-            transform: 'rotateY(360deg)'
+        // "0%" : {
+        //     transform: 'rotateY(360deg)'
+        // },
+        // "25%" : {
+        //     transform : 'rotateY(180deg)'
+        // },
+        // "50%" : {
+        //     transform : 'rotateY(360deg)'
+        // },
+        // "75%" : {
+        //     transform : 'rotateY(180deg)'
+        // },
+        // "100%" : {
+        //     transform : 'rotateY(360deg)'
+        // }
+        "0%":{
+            transform: 'rotate(-40deg) rotateY(180deg)'
         },
-        "25%" : {
-            transform : 'rotateY(180deg)'
+        "20%": {
+            transform: 'rotate(40deg) rotateY(360deg)'
         },
-        "50%" : {
-            transform : 'rotatey(360deg)'
+        "40%":{
+            transform: ' rotate(-40deg) rotateY(180deg)'
         },
-        "75%" : {
-            transform : 'rotateY(180deg)'
+        "60%": {
+            transform: ' rotate(40deg) rotateY(360deg)'
         },
         "100%" : {
-            transform : 'rotateY(360deg)'
+            transform: 'rotate(0deg) rotateY(180deg)'
         }
     },
     "@keyframes shine" : {
         "50%": {
             backgroundPosition: '200% center'
+        }
+    },
+    "@keyframes slide" : {
+        "0%":{
+            transform: 'translateX(-50%) translateY(-25%) rotate(-40deg)'
+        },
+        "20%": {
+            transform: 'translateX(-50%) translateY(-25%) rotate(40deg)'
+        },
+        "40%":{
+            transform: 'translateX(-50%) translateY(-25%) rotate(-40deg)'
+        },
+        "60%": {
+            transform: 'translateX(-50%) translateY(-25%) rotate(40deg) '
+        },
+        "100%" : {
+            transform: 'translateX(-50%) translateY(-25%) translateY(70%)'
         }
     },
     "@font-face": {
@@ -289,6 +330,7 @@ export default function Index(props){
 
     const [open, setOpen] = useState(false);
     const [openModal, setOpenModal] = useState(false);
+    //const [openModal2, setOpenModal2] = useState(false);
     const [turn, setTurn] = useState(false);
     const [message, setMessage] = useState("");
     const [run, setRun] = useState(false);
@@ -305,8 +347,16 @@ export default function Index(props){
         setOpenModal(true);
     }
 
+    const handleModalOpen2 = () =>{
+        setDisappear(true);
+    }
+
     const handleModalClose = () => {
         setOpenModal(false);
+    }
+
+    const handleModalClose2 = () => {
+        setDisappear(false);
     }
 
     const onCardClick = (team,key) => {
@@ -340,6 +390,13 @@ export default function Index(props){
             })
             .then(data => {
                 console.log(data);
+                
+                const testpercent = 90;
+                setPercent(testpercent);
+                if(testpercent > 50){
+                    setTurn(true);
+                };
+                //set percent here
             })
             .catch(err => {
                 console.log(err);
@@ -367,12 +424,6 @@ export default function Index(props){
             setDisappear(true);
             setRun(true);
             setTrigger(prevState=>{ !prevState });
-
-            const testpercent = 90;
-            setPercent(testpercent);
-            if(testpercent > 50){
-                setTurn(true);
-            }
         }
     }
 
@@ -425,6 +476,65 @@ export default function Index(props){
                     </Paper>
                 </Fade>
             </Modal>
+            <Modal
+                className={classes.modal}
+                open={disappear}
+                onClose={handleModalClose2}
+                closeAfterTransition
+                disableEscapeKeyDown
+                disableBackdropClick
+                disableEnforceFocus
+                disableAutoFocus
+            >   
+                <Fade in={disappear}> 
+                    <Grid container>
+                        <Grid item xs={12} style={{height: '50vh'}}>
+                            <svg viewBox="0 0 36 36" className={`${classes.center} ${classes.circularChart}`}>
+                                <path className={classes.circlebg}
+                                    d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                />
+                                <path className={classes.oppositeCircle}
+                                    d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                />
+                                <path
+                                    className={clsx({[classes.circle]:run})}
+                                    d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831"
+                                    fill="none"
+                                    stroke="#444"
+                                    strokeWidth="1"
+                                    strokeDasharray={`${percent}, 100`}
+                                />
+                            </svg>
+                            <div className={classes.center}>
+                                <img src="https://static-cdn.jtvnw.net/emoticons/v1/301702758/2.0" 
+                                    style={{height: '100px', width: 'auto'}}
+                                    className={clsx({[classes.rotatingBlue]:run, [classes.turn]: turn})}
+                                />
+                            </div>
+                        </Grid>
+                        <Grid item xs={12}>
+                            <img src="https://static-cdn.jtvnw.net/emoticons/v1/302703811/2.0" className={classes.hidingblue}/>
+                            <Typography variant="h1" style={{fontFamily: "'Big Shoulders Stencil Text', cursive", color: 'white'}}>
+                                {percent}
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} style={{paddingTop: '10vh'}}>
+                            <Button color="default" onClick={reset} style={{backgroundColor: '#2468BF'}}>
+                                <Typography variant="h2" style={{fontFamily: "'Big Shoulders Stencil Text', cursive", color: 'white'}}>
+                                    Reset
+                                </Typography>
+                            </Button>
+                        </Grid>
+                        
+                    </Grid>
+                </Fade>
+            </Modal>
             <Fade in={!disappear} timeout={fade}>
                 <Fab
                     className={`${classes.fightButton} ${classes.center}`} 
@@ -435,40 +545,10 @@ export default function Index(props){
                     </Typography>
                 </Fab>
             </Fade>
-            <Fade in={disappear}>
-                <Button className={classes.centerReset} onClick={reset} color="primary">
-                    <Typography variant="h2" style={{fontFamily: "'Big Shoulders Stencil Text', cursive", color: 'white'}}>
-                        Reset
-                    </Typography>
-                </Button>
-            </Fade>
-            <svg viewBox="0 0 36 36" className={`${classes.center} ${classes.circularChart}`}>
-                <path className={classes.circlebg}
-                    d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path className={classes.oppositeCircle}
-                    d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path
-                    className={clsx({[classes.circle]:run})}
-                    d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                    fill="none"
-                    stroke="#444"
-                    strokeWidth="1"
-                    strokeDasharray={`${percent}, 100`}
-                />
-            </svg>
+
+
             <div className={classes.center}>
-                <img src="https://static-cdn.jtvnw.net/emoticons/v1/301702758/2.0" 
-                    style={{height: '100px', width: 'auto'}}
-                    className={clsx({[classes.rotatingBlue]:run, [classes.turn]: turn})}
-                />
+
                     {/* <Typography variant="h1" style={{color: 'white'}}>
                         {percent}
                     </Typography> */}
