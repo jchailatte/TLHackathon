@@ -4,7 +4,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
 import Fab from '@material-ui/core/Fab';
 import AutoComplete from '@material-ui/lab/AutoComplete'; 
 import Fade from '@material-ui/core/Fade';
@@ -13,7 +12,6 @@ import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardActionArea from '@material-ui/core/CardActionArea';
 import Modal from '@material-ui/core/Modal';
@@ -26,13 +24,15 @@ import { useFetch } from '../utils/hooks/useFetch';
 const useStyles = makeStyles((theme) => ({
     side1: {
         backgroundColor: '#0C223F',
+        paddingBottom: '5vh'
     },
     side2: {
         backgroundColor: '#FFFFFF',
+        paddingBottom: '5vh'
     },
     center: {
         position: 'absolute',
-        top: '60%',
+        top: '35%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
     },
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme) => ({
         width: '25vh',
         background: '#ce2029',
         color: 'white',
-        zIndex: '10',
+        zIndex: '30',
         boxShadow: '0 0 0 0 rgba(199, 21, 133, 0.5)',
         animation: '$pulse 2s infinite'
     },
@@ -143,7 +143,7 @@ const useStyles = makeStyles((theme) => ({
         fontFamily: 'SFF'
     },
     wavepadding: {
-        paddingTop: '15vh',
+        paddingTop: '20vh',
     },
     rotatingBlue: {
         animation: '$rotate 6s linear'
@@ -286,7 +286,7 @@ export default function Index(props){
     const [run, setRun] = useState(false);
     const [team1, setTeam1] = useState(initialState);
     const [team2, setTeam2] = useState(initialState);
-    const [chosen, setChosen] = useState([]);
+    const [chosen, setChosen] = useState([...Array(10)]);
     const [disappear, setDisappear] = useState(false);
     const [fade, setFade] = useState(0);
     const [percent, setPercent] = useState(50);
@@ -302,7 +302,7 @@ export default function Index(props){
     }
 
     const onCardClick = (team,key) => {
-        setCurrentCard(((team-1) * 0) + key);
+        setCurrentCard(((team-1) * 5) + key);
         handleModalOpen();
     }
 
@@ -328,13 +328,12 @@ export default function Index(props){
     }
 
     const onTileClick = (champKey, loadingUrl) => {
-        console.log(champKey);
         if(currentCard < 5 ) {
             setTeam1({...team1, [positions[currentCard%5]]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
         }  else {
             setTeam2({...team2, [positions[currentCard%5]]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
         }
-
+    
         handleModalClose();
     }
 
@@ -367,7 +366,6 @@ export default function Index(props){
                             {Object.keys(champData).map((index) =>(
                                 <Grid item key={index}>
                                     <Button
-                                        size="medium"
                                         onClick={()=>onTileClick(champData[index].key, `${index}_0.jpg`)}
                                     >
                                         <img src={`/graphics/champion/${champData[index].image.full}`}/>
@@ -380,7 +378,7 @@ export default function Index(props){
                 </Fade>
             </Modal>
             <Fade in={!disappear} timeout={fade}>
-                <Fab 
+                <Fab
                     className={`${classes.fightButton} ${classes.center}`} 
                     onClick={fightOnClick}
                 >
@@ -446,11 +444,7 @@ export default function Index(props){
                         <div className={`${classes.wave} ${classes.wave3}`}></div>
                     </div>
                 </Grid>
-                <Grid container item xs={12} className={classes.wavepadding}>
-
-                </Grid>
-
-                <Grid item container xs={6} className={classes.side1} style={{paddingTop: '20px'}}>
+                <Grid item container xs={6} className={`${classes.side1} ${classes.wavepadding}`} >
                     <Grid item xs={12}>
                         <Paper className={classes.paperPadding}>
                             <Typography variant='h3'> 
@@ -461,7 +455,7 @@ export default function Index(props){
                     <Grid item container xs={12} justify="space-evenly" style={{paddingTop: '20px'}}>
                         {positions.map((pos,key) =>(
                             <Grid item key={key}>
-                                <Card className={classes.champCards}>
+                                <Card className={classes.champCards} style={{backgroundColor: ''}}>
                                     <CardActionArea
                                         onClick={()=>onCardClick(1, key)}
                                     >
@@ -477,13 +471,31 @@ export default function Index(props){
                         ))}
                     </Grid>
                 </Grid>
-                <Grid item xs={6} className={classes.side2}>
+                <Grid item xs={6} className={`${classes.side2} ${classes.wavepadding}`}>
                     <Grid item xs={12}>
                         <Paper className={classes.paperPadding} style={{backgroundColor: '#0C223F'}}>
                             <Typography variant='h3' style={{color: 'white'}}>
                                 Team 2
                             </Typography>
                         </Paper>
+                        <Grid item container xs={12} justify="space-evenly" style={{paddingTop: '20px'}}>
+                            {positions.map((pos,key) =>(
+                                <Grid item key={key}>
+                                    <Card className={classes.champCards} style={{backgroundColor: '#0C223F'}}>
+                                        <CardActionArea
+                                            onClick={()=>onCardClick(2, key)}
+                                        >
+                                            <CardHeader title={pos} style={{color:"white"}}/>
+                                            <CardMedia
+                                                style={{height:'70vh'}}
+                                                image={team2[pos].src}
+                                            >
+                                            </CardMedia>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
                     </Grid>
                 </Grid>
             </Grid>
