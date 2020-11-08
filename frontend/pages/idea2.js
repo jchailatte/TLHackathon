@@ -36,6 +36,14 @@ const useStyles = makeStyles((theme) => ({
         left: '50%',
         transform: 'translate(-50%, -50%)',
     },
+    centerReset: {
+        position:'absolute',
+        top: '60%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        zIndex: '100',
+        backgroundColor: '#2468BF'
+    },
     alert: {
         position: 'absolute',
         top: '5%',
@@ -79,17 +87,17 @@ const useStyles = makeStyles((theme) => ({
     },
     circularChart: {
         maxWidth: '25vh',
-        zIndex: '5',
+        zIndex: '25',
     },
     circle: {
-        stroke: 'white',
+        stroke: '#2468BF',
         fill: 'none',
         strokeWidth: '2.8',
         animation: '$progress 6s ease-out forwards',
     
     },
     oppositeCircle: {
-        stroke: '#0C223F',
+        stroke: 'white',
         fill: 'none',
         strokeWidth: '2.8',
     },
@@ -167,7 +175,7 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         background: 'linear-gradient(to right, #fff 20%, #00000000 40%, #0C223F 50%, #0C223F 55%, #00000000 70%, #fff 100%)',
         backgroundSize: '200% auto',
-        animation: "$shine 3s linear infinite"
+        animation: "$shine 6s linear infinite"
     },
     modal: {
         display: 'flex',
@@ -286,12 +294,12 @@ export default function Index(props){
     const [run, setRun] = useState(false);
     const [team1, setTeam1] = useState(initialState);
     const [team2, setTeam2] = useState(initialState);
-    const [chosen, setChosen] = useState([...Array(10)]);
     const [disappear, setDisappear] = useState(false);
     const [fade, setFade] = useState(0);
     const [percent, setPercent] = useState(50);
-
     const [currentCard, setCurrentCard] = useState(0);
+    const [trigger, setTrigger] = useState(false);
+    const isFirstRun = React.useRef(true);
 
     const handleModalOpen = () => {
         setOpenModal(true);
@@ -306,20 +314,61 @@ export default function Index(props){
         handleModalOpen();
     }
 
+    const reset = () => {
+        setTeam1({...initialState});
+        setTeam2({...initialState});
+        setFade(0);
+        setDisappear(false);
+        setRun(false);
+        setTurn(false);
+        setPercent(50);
+    }
+
+    useEffect(() => {
+        if (isFirstRun.current) {
+            isFirstRun.current = false;
+            return;
+        }
+
+        const team1string = `${team1["Top"].champion}%2C${team1["Jung"].champion}%2C${team1["Mid"].champion}%2C${team1["Bot"].champion}%2C${team1["Sup"].champion}`;
+        const team2string = `${team2["Top"].champion}%2C${team2["Jung"].champion}%2C${team2["Mid"].champion}%2C${team2["Bot"].champion}%2C${team2["Sup"].champion}`;
+        console.log(`http://localhost:8088/compare_teams?team_1=${team1string}&team_2=${team2string}`);
+
+        fetch(`http://localhost:8088/compare_teams?team_1=${team1string}&team_2=${team2string}`)
+            .then(data => {
+                return data.json();
+            })
+            .then(data => {
+                console.log(data);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+      }, [trigger]);
 
     const fightOnClick = () => {
-        if(player1 === "" || player2 === "") {
+        let flag = false;
+        Object.keys(team1).map((index)=>{
+            if(team1[index].champion === "") {
+                flag = true;
+            }
+        });
+        Object.keys(team2).map((index)=>{
+            if(team2[index].champion === "") {
+                flag = true;
+            }
+        });
+        
+        if(flag){
             setOpen(true);
-            setMessage("Must select a Player!");
-        } 
-        else if (player1 === player2) {
-            setOpen(true);
-            setMessage("Players cannot be the same!");
+            setMessage("Teams must be filled completely!");
         } else {
-            const testpercent = 90;
             setFade(800);
             setDisappear(true);
             setRun(true);
+            setTrigger(prevState=>{ !prevState });
+
+            const testpercent = 90;
             setPercent(testpercent);
             if(testpercent > 50){
                 setTurn(true);
@@ -339,7 +388,6 @@ export default function Index(props){
 
     return(
         <React.Fragment>
-
             <Fade in={open}>
                 <Alert
                     severity="warning"
@@ -387,6 +435,13 @@ export default function Index(props){
                     </Typography>
                 </Fab>
             </Fade>
+            <Fade in={disappear}>
+                <Button className={classes.centerReset} onClick={reset} color="primary">
+                    <Typography variant="h2" style={{fontFamily: "'Big Shoulders Stencil Text', cursive", color: 'white'}}>
+                        Reset
+                    </Typography>
+                </Button>
+            </Fade>
             <svg viewBox="0 0 36 36" className={`${classes.center} ${classes.circularChart}`}>
                 <path className={classes.circlebg}
                     d="M18 2.0845
@@ -411,7 +466,12 @@ export default function Index(props){
             </svg>
             <div className={classes.center}>
                 <img src="https://static-cdn.jtvnw.net/emoticons/v1/301702758/2.0" 
-                    className={clsx({[classes.rotatingBlue]:run, [classes.turn]: turn})}/>
+                    style={{height: '100px', width: 'auto'}}
+                    className={clsx({[classes.rotatingBlue]:run, [classes.turn]: turn})}
+                />
+                    {/* <Typography variant="h1" style={{color: 'white'}}>
+                        {percent}
+                    </Typography> */}
             </div>
             <Grid container align="center">
                 <Grid item xs={12} className={classes.title}>

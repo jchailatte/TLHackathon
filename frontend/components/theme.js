@@ -7,7 +7,7 @@ const theme = responsiveFontSizes(createMuiTheme({
             main: '#556cd6',
         },
         secondary: {
-            main: '#000000',
+            main: '#FFFFFF',
         },
         error: {
             main: red.A400,
