@@ -5,13 +5,19 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
-import TextField from '@material-ui/core/TextField';
 import Fab from '@material-ui/core/Fab';
 import AutoComplete from '@material-ui/lab/AutoComplete'; 
 import Fade from '@material-ui/core/Fade';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
+import Card from '@material-ui/core/Card';
+import CardMedia from '@material-ui/core/CardMedia';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import Modal from '@material-ui/core/Modal';
+import Button from '@material-ui/core/Button';
 
 import champions from '../components/champion.json';
 import { useGet } from '../utils/hooks/useGet';
@@ -147,8 +153,33 @@ const useStyles = makeStyles((theme) => ({
     },
     champCards: {
         height: '75vh',
-        width: '90%',
-        padding: '10px'
+        width: '8vw',
+    },
+    gradientBorder: {
+        position: 'absolute',
+        display: 'block',
+        top: '-50%',
+        left: '-50%',
+        zIndex: '-9',
+        height: '200%',
+        width: '200%',
+        transform: 'rotate(-45deg)',
+        overflow: 'hidden',
+        background: 'linear-gradient(to right, #fff 20%, #00000000 40%, #0C223F 50%, #0C223F 55%, #00000000 70%, #fff 100%)',
+        backgroundSize: '200% auto',
+        animation: "$shine 3s linear infinite"
+    },
+    modal: {
+        display: 'flex',
+        padding: theme.spacing(1),
+        alignItems: 'center',
+        justifyContent: 'center',
+        textAlign:'center',
+    },
+    paperModal: {
+        width: '90vw', 
+        maxHeight: '90vh', 
+        overflowY: 'scroll',
     },
     "@keyframes progress": {
         "0%": {
@@ -202,6 +233,11 @@ const useStyles = makeStyles((theme) => ({
             transform : 'rotateY(360deg)'
         }
     },
+    "@keyframes shine" : {
+        "50%": {
+            backgroundPosition: '200% center'
+        }
+    },
     "@font-face": {
         fontFamily: 'SFF',
         src: `url("/fonts/SFF.otf") format("opentype")`
@@ -211,25 +247,6 @@ const useStyles = makeStyles((theme) => ({
     
 }));
 
-const players = [
-    {
-        value: "DoubleLift",
-        label: "DoubleLift"
-    },
-    {
-        value: "Tactical",
-        label: "Tactical"
-    },
-    {
-        value: "CoreJJ",
-        label: "CoreJJ"
-    },
-    { 
-        value: "Test",
-        label: "Test"
-    },
-]
-
 const positions = [
     "Top", "Jung", "Mid", "Bot", "Sup"
 ]
@@ -238,17 +255,57 @@ export default function Index(props){
 
     const classes= useStyles();
 
+    const champData = champions[0].data;
+    const initialState ={
+        Top: {
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Jung:{
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Mid: {
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Bot:{
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Sup: {
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+    };
+
     const [open, setOpen] = useState(false);
+    const [openModal, setOpenModal] = useState(false);
     const [turn, setTurn] = useState(false);
     const [message, setMessage] = useState("");
     const [run, setRun] = useState(false);
-    const [image1, setImage1] = useState("/graphics/default.png");
-    const [image2, setImage2] = useState("/graphics/default.png");
+    const [team1, setTeam1] = useState(initialState);
+    const [team2, setTeam2] = useState(initialState);
+    const [chosen, setChosen] = useState([]);
     const [disappear, setDisappear] = useState(false);
     const [fade, setFade] = useState(0);
     const [percent, setPercent] = useState(50);
 
-    const champData = champions[0].data;
+    const [currentCard, setCurrentCard] = useState(0);
+
+    const handleModalOpen = () => {
+        setOpenModal(true);
+    }
+
+    const handleModalClose = () => {
+        setOpenModal(false);
+    }
+
+    const onCardClick = (team,key) => {
+        setCurrentCard(((team-1) * 0) + key);
+        handleModalOpen();
+    }
+
 
     const fightOnClick = () => {
         if(player1 === "" || player2 === "") {
@@ -270,8 +327,20 @@ export default function Index(props){
         }
     }
 
+    const onTileClick = (champKey, loadingUrl) => {
+        console.log(champKey);
+        if(currentCard < 5 ) {
+            setTeam1({...team1, [positions[currentCard%5]]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
+        }  else {
+            setTeam2({...team2, [positions[currentCard%5]]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
+        }
+
+        handleModalClose();
+    }
+
     return(
         <React.Fragment>
+
             <Fade in={open}>
                 <Alert
                     severity="warning"
@@ -286,6 +355,30 @@ export default function Index(props){
                     {message}
                 </Alert>
             </Fade>
+            <Modal
+                className={classes.modal}
+                open={openModal}
+                onClose={handleModalClose}
+                closeAfterTransition
+            >
+                <Fade in={openModal}>
+                    <Paper className={classes.paperModal}>
+                        <Grid container justify="center">
+                            {Object.keys(champData).map((index) =>(
+                                <Grid item key={index}>
+                                    <Button
+                                        size="medium"
+                                        onClick={()=>onTileClick(champData[index].key, `${index}_0.jpg`)}
+                                    >
+                                        <img src={`/graphics/champion/${champData[index].image.full}`}/>
+                                    </Button>
+                                </Grid>
+                            ))}
+                        </Grid>
+                        <div className={classes.gradientBorder}></div>
+                    </Paper>
+                </Fade>
+            </Modal>
             <Fade in={!disappear} timeout={fade}>
                 <Fab 
                     className={`${classes.fightButton} ${classes.center}`} 
@@ -354,14 +447,10 @@ export default function Index(props){
                     </div>
                 </Grid>
                 <Grid container item xs={12} className={classes.wavepadding}>
-                    {Object.keys(champData).map((key) =>(
-                        <Grid item xs={1}>
-                            <img src={`/graphics/champion/${champData[key].image.full}`} />
-                        </Grid>
-                    ))}
+
                 </Grid>
 
-                <Grid item container xs={6} className={classes.side1}>
+                <Grid item container xs={6} className={classes.side1} style={{paddingTop: '20px'}}>
                     <Grid item xs={12}>
                         <Paper className={classes.paperPadding}>
                             <Typography variant='h3'> 
@@ -369,18 +458,24 @@ export default function Index(props){
                             </Typography>
                         </Paper>
                     </Grid>
-                    <Grid item container  xs={12} alignContent="stretch" style={{paddingTop: '10px'}}>
+                    <Grid item container xs={12} justify="space-evenly" style={{paddingTop: '20px'}}>
                         {positions.map((pos,key) =>(
-                            <Grid item>
-                                <Paper className={`${classes.champCards} ${classes.paperPadding}`}>
-                                <Typography variant="h3">
-                                    {pos}
-                                </Typography>
-                            </Paper>
+                            <Grid item key={key}>
+                                <Card className={classes.champCards}>
+                                    <CardActionArea
+                                        onClick={()=>onCardClick(1, key)}
+                                    >
+                                        <CardHeader title={pos}/>
+                                        <CardMedia
+                                            style={{height:'70vh'}}
+                                            image={team1[pos].src}
+                                        >
+                                        </CardMedia>
+                                    </CardActionArea>
+                                </Card>
                             </Grid>
                         ))}
                     </Grid>
-                    
                 </Grid>
                 <Grid item xs={6} className={classes.side2}>
                     <Grid item xs={12}>
