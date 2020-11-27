@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import Fab from '@material-ui/core/Fab';
-import AutoComplete from '@material-ui/lab/AutoComplete'; 
 import Fade from '@material-ui/core/Fade';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import IconButton from '@material-ui/core/IconButton';
@@ -18,8 +17,6 @@ import Modal from '@material-ui/core/Modal';
 import Button from '@material-ui/core/Button';
 
 import champions from '../components/champion.json';
-import { useGet } from '../utils/hooks/useGet';
-import { useFetch } from '../utils/hooks/useFetch';
  
 const useStyles = makeStyles((theme) => ({
     side1: {
@@ -195,6 +192,10 @@ const useStyles = makeStyles((theme) => ({
         animation: "$slide 6s linear forwards"
 
     },
+    grayOut: {
+        opacity: 0.4,
+        filter: 'alpha(opacity=40)'
+    },
     slideDown: {
     },
     "@keyframes progress": {
@@ -233,21 +234,6 @@ const useStyles = makeStyles((theme) => ({
         }
     },
     "@keyframes rotate":{
-        // "0%" : {
-        //     transform: 'rotateY(360deg)'
-        // },
-        // "25%" : {
-        //     transform : 'rotateY(180deg)'
-        // },
-        // "50%" : {
-        //     transform : 'rotateY(360deg)'
-        // },
-        // "75%" : {
-        //     transform : 'rotateY(180deg)'
-        // },
-        // "100%" : {
-        //     transform : 'rotateY(360deg)'
-        // }
         "0%":{
             transform: 'rotate(-40deg) rotateY(180deg)'
         },
@@ -289,10 +275,7 @@ const useStyles = makeStyles((theme) => ({
     "@font-face": {
         fontFamily: 'SFF',
         src: `url("/fonts/SFF.otf") format("opentype")`
-    },
-
-    //potentially add keyframes for rotating blues at the top
-    
+    },    
 }));
 
 const positions = [
@@ -305,23 +288,43 @@ export default function Index(props){
 
     const champData = champions[0].data;
     const initialState ={
-        Top: {
+        Top1: {
             champion: "",
             src: "/graphics/portraitbg.jpg"
         },
-        Jung:{
+        Jung1:{
             champion: "",
             src: "/graphics/portraitbg.jpg"
         },
-        Mid: {
+        Mid1: {
             champion: "",
             src: "/graphics/portraitbg.jpg"
         },
-        Bot:{
+        Bot1:{
             champion: "",
             src: "/graphics/portraitbg.jpg"
         },
-        Sup: {
+        Sup1: {
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Top2: {
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Jung2:{
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Mid2: {
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Bot2:{
+            champion: "",
+            src: "/graphics/portraitbg.jpg"
+        },
+        Sup2: {
             champion: "",
             src: "/graphics/portraitbg.jpg"
         },
@@ -332,8 +335,10 @@ export default function Index(props){
     const [turn, setTurn] = useState(false);
     const [message, setMessage] = useState("");
     const [run, setRun] = useState(false);
-    const [team1, setTeam1] = useState(initialState);
-    const [team2, setTeam2] = useState(initialState);
+    // const [team1, setTeam1] = useState(initialState);
+    // const [team2, setTeam2] = useState(initialState);
+    const [team, setTeam] = useState(initialState);
+    const [selected, setSelected] = useState({});
     const [disappear, setDisappear] = useState(false);
     const [fade, setFade] = useState(0);
     const [percent, setPercent] = useState(50);
@@ -343,24 +348,24 @@ export default function Index(props){
 
     const handleModalOpen = () => {
         setOpenModal(true);
-    }
+    };
 
     const handleModalOpen2 = () =>{
         setDisappear(true);
-    }
+    };
 
     const handleModalClose = () => {
         setOpenModal(false);
-    }
+    };
 
     const handleModalClose2 = () => {
         setDisappear(false);
-    }
+    };
 
     const onCardClick = (team,key) => {
         setCurrentCard(((team-1) * 5) + key);
         handleModalOpen();
-    }
+    };
 
     const reset = () => {
         // setTeam1({...initialState});
@@ -371,7 +376,7 @@ export default function Index(props){
         setRun(false);
         setTurn(false);
         setPercent(50);
-    }
+    };
 
     useEffect(() => {
         if (isFirstRun.current) {
@@ -379,18 +384,14 @@ export default function Index(props){
             return;
         }
 
-        const team1string = `${team1["Top"].champion}%2C${team1["Jung"].champion}%2C${team1["Mid"].champion}%2C${team1["Bot"].champion}%2C${team1["Sup"].champion}`;
-        const team2string = `${team2["Top"].champion}%2C${team2["Jung"].champion}%2C${team2["Mid"].champion}%2C${team2["Bot"].champion}%2C${team2["Sup"].champion}`;
-        console.log(`http://localhost:8088/compare_teams?team_1=${team1string}&team_2=${team2string}`);
+        const team1string = `${team["Top1"].champion}%2C${team["Jung1"].champion}%2C${team["Mid1"].champion}%2C${team["Bot1"].champion}%2C${team["Sup1"].champion}`;
+        const team2string = `${team["Top2"].champion}%2C${team["Jung2"].champion}%2C${team["Mid2"].champion}%2C${team["Bot2"].champion}%2C${team["Sup2"].champion}`;
 
-        //replace here
         fetch(`http://localhost:8088/compare_teams?team_1=${team1string}&team_2=${team2string}`)
             .then(data => {
                 return data.json();
             })
-            .then(data => {
-                console.log(data.win_chance);
-                
+            .then(data => {                
                 const chance = data.win_chance;
                 setPercent(chance);
                 if(chance > 50){
@@ -400,7 +401,7 @@ export default function Index(props){
             .catch(err => {
                 console.log(err);
             });
-      }, [trigger]);
+    }, [trigger]);  
 
     const fightOnClick = () => {
         let flag = false;
@@ -427,12 +428,9 @@ export default function Index(props){
     }
 
     const onTileClick = (champKey, loadingUrl) => {
-        if(currentCard < 5 ) {
-            setTeam1({...team1, [positions[currentCard%5]]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
-        }  else {
-            setTeam2({...team2, [positions[currentCard%5]]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
-        }
-    
+        setTeam({...team, [`${positions[currentCard%5]}${(currentCard < 5) ? "1" :"2"}`]: {champion: champKey, src: `/graphics/loading/${loadingUrl}`}});
+        setSelected({...selected,[currentCard]: champKey});
+
         handleModalClose();
     }
 
@@ -461,15 +459,22 @@ export default function Index(props){
                 <Fade in={openModal}>
                     <Paper className={classes.paperModal}>
                         <Grid container justify="center">
-                            {Object.keys(champData).map((index) =>(
-                                <Grid item key={index}>
-                                    <Button
-                                        onClick={()=>onTileClick(champData[index].key, `${index}_0.jpg`)}
-                                    >
-                                        <img src={`/graphics/champion/${champData[index].image.full}`}/>
-                                    </Button>
-                                </Grid>
-                            ))}
+                            {Object.keys(champData).map((index) =>
+                            {
+                                const dis =  Object.values(selected).includes(champData[index].key);
+                                return (
+                                    <Grid item key={index}>
+                                        <Button
+                                            onClick={()=>onTileClick(champData[index].key, `${index}_0.jpg`)}
+                                            disabled={dis}
+                                        >
+                                            <img 
+                                                className={ clsx({[classes.grayOut]: dis })}
+                                                src={`/graphics/champion/${champData[index].image.full}`}/>
+                                        </Button>
+                                    </Grid>
+                                )
+                            })}
                         </Grid>
                         <div className={classes.gradientBorder}></div>
                     </Paper>
@@ -601,7 +606,7 @@ export default function Index(props){
                                         <CardHeader title={pos}/>
                                         <CardMedia
                                             style={{height:'70vh'}}
-                                            image={team1[pos].src}
+                                            image={team[pos + '1'].src}
                                         >
                                         </CardMedia>
                                     </CardActionArea>
@@ -627,7 +632,7 @@ export default function Index(props){
                                             <CardHeader title={pos} style={{color:"white"}}/>
                                             <CardMedia
                                                 style={{height:'70vh'}}
-                                                image={team2[pos].src}
+                                                image={team[pos + '2'].src}
                                             >
                                             </CardMedia>
                                         </CardActionArea>
